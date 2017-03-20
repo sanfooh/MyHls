@@ -1,0 +1,2 @@
+# MyHls
+MyHls是一个基于windows的hls服务，可拉取摄像头rtsp流以hls进行分发，其特点是内存切片且进行session处理，网络好的情况延时在1秒以内，它是基于ffmpeg库进行开发的所以代码量很少。
