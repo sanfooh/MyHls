@@ -79,13 +79,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="player\hls.min.js">
-      <Filter>player</Filter>
-    </None>
     <None Include="player\index.html">
       <Filter>player</Filter>
     </None>
-    <None Include="player\jquery-3.1.1.min.js">
+    <None Include="player\css\index.css">
       <Filter>player</Filter>
     </None>
   </ItemGroup>

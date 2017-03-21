@@ -2,16 +2,24 @@
 <html>
 <head>
     <title></title>
-    <script src="jquery-3.1.1.min.js"></script>
-    <script src="hls.min.js"></script>
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/hls.min.js"></script>
+    <script src="js/index.js"></script>
+    <link href="css/index.css" rel="stylesheet" />
 </head>
 <body>
-    <video id="video" width="500" height="300"></video>
-    <br />
-    <input type="text" id="tag" value="tag1" /><input type="text" id="rtsp" value="rtsp:%%192.168.1.35" /><input type="button" value="add" onclick="add()" />
-    <table class="tb" ></table>
-    <p id="usage"/>
-    <p id="clients"/>
+    <center><video id="video" width="500" height="300"></video></center>
+        <div  class="common" id="channel" ></div>
+		<br style="clear:both"/>
+	<div style="float:left">
+       <input type="text" id="tag" value="tag1" /><input type="text" id="rtsp" value="rtsp:%%192.168.1.35" /><input type="button" value="add" onclick="add()" />
+
+    <p id="usage" />
+    <p id="clients" />
+	</div>
+
+    
+
     <script>
         var hls;
         $(function () {
@@ -26,14 +34,34 @@
             $.get("http://localhost:50010/GetPullList", function (backData) {
                 var html = "";
                 for (i = 0; i < backData.data.length; i++) {
-                    html += "<tr><td>" + i + "</td><td> http://localhost:50010/Play/"
-                        + backData.data[i]
-                        + "</td><td><button onclick=\"play('http://localhost:50010/Play/" + backData.data[i] + "')\">play</button> </td></tr>";
-                }
-                $(".tb").html(html);
+
+                    var tag=backData.data[i];
+
+                    html += "<li class='listbox mr20'>\
+                <div class='listimg'>\
+                    <a  onclick=\"play('http://192.168.1.212:50010/Play/" + backData.data[i] + "')\" title='' >\
+                        <img src='images/01.png' class='attachment-thumbnail wp-post-image' alt='' /></a>\
+                    <div class='summary'>\
+                        <div class='summarytxt'>\
+                            <p>" + tag + "</p>\
+                        </div>\
+                    </div>\
+                </div>\
+                <div class='listinfo'>\
+                    <div class='listtitle'><a href='#' title='" + tag + "' target='_blank'>" + tag + "</a></div>\
+                    <div class='listtag'><a href='#' rel='tag'>Ö±²¥</a></div>\
+                    <div class='listdate'>2020-08-25</div>\
+                    <div class='listview'>6253</div>\
+                    <div class='listcomment'>16</div>\
+                    <div class='listdemo'><a href='#' rel='external nofollow' target='_blank'></a></div>\
+                </div>\
+            </li>";
+
+				}
+                $("#channel").html(html);
             }, "json");
         }
-     
+
         function play(url) {
             if (hls != null) {
                 delete hls;
