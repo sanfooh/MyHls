@@ -95,6 +95,10 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>XCopy "$(SolutionDir)HLS\dll" "$(SolutionDir)$(Configuration)" /i /s /y
+XCopy "$(SolutionDir)HLS\player" "$(SolutionDir)$(Configuration)\player" /i /s /y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
