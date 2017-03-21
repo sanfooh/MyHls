@@ -16,6 +16,9 @@
     <Filter Include="Common">
       <UniqueIdentifier>{00348acd-a5e4-41bc-8c6a-bfd10ab4e48b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="player">
+      <UniqueIdentifier>{3776abb7-037b-49ca-8aff-39fee0cfeb21}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -74,5 +77,16 @@
     <ClCompile Include="mongoose.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="player\hls.min.js">
+      <Filter>player</Filter>
+    </None>
+    <None Include="player\index.html">
+      <Filter>player</Filter>
+    </None>
+    <None Include="player\jquery-3.1.1.min.js">
+      <Filter>player</Filter>
+    </None>
   </ItemGroup>
 </Project>

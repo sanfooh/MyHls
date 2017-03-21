@@ -172,6 +172,11 @@ XCopy "$(SolutionDir)HLS\player" "$(SolutionDir)$(Configuration)\player" /i /s /
     <ClCompile Include="HLS.cpp" />
     <ClCompile Include="mongoose.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="player\hls.min.js" />
+    <None Include="player\index.html" />
+    <None Include="player\jquery-3.1.1.min.js" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

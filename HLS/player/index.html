@@ -9,8 +9,7 @@
     <video id="video" width="500" height="300"></video>
     <br />
     <input type="text" id="tag" value="tag1" /><input type="text" id="rtsp" value="rtsp:%%192.168.1.35" /><input type="button" value="add" onclick="add()" />
-
-    <table class="tb" />
+    <table class="tb" ></table>
     <p id="usage"/>
     <p id="clients"/>
     <script>
@@ -24,12 +23,12 @@
         });
 
         function getList() {
-            $.get("http://192.168.1.212:50010/GetPulllist", function (backData) {
+            $.get("http://localhost:50010/GetPullList", function (backData) {
                 var html = "";
                 for (i = 0; i < backData.data.length; i++) {
-                    html += "<tr><td>" + i + "</td><td> http://192.168.1.212:50010/Play/"
+                    html += "<tr><td>" + i + "</td><td> http://localhost:50010/Play/"
                         + backData.data[i]
-                        + "</td><td><button onclick=\"play('http://192.168.1.212:50010/Play/" + backData.data[i] + "')\">play</button> </td></tr>";
+                        + "</td><td><button onclick=\"play('http://localhost:50010/Play/" + backData.data[i] + "')\">play</button> </td></tr>";
                 }
                 $(".tb").html(html);
             }, "json");
@@ -52,7 +51,7 @@
         }
 
         function add() {
-            $.get("http://192.168.1.212:50010/AddPull/" + $('#tag').val() + '/' + $('#rtsp').val(), function (backData) {
+            $.get("http://localhost:50010/AddPull/" + $('#tag').val() + '/' + $('#rtsp').val(), function (backData) {
                 if (backData.ret == 0) {
                     alert(backData.message);
                 }
@@ -63,7 +62,7 @@
         }
 
         function getUsage() {
-            $.get("http://192.168.1.212:50010/GetUsage", function (backData) {
+            $.get("http://localhost:50010/GetUsage", function (backData) {
                 if (backData.ret == 1) {
                     $('#usage').html(backData.message);
                 }
@@ -71,7 +70,7 @@
         }
 
         function getClients() {
-            $.get("http://192.168.1.212:50010/GetClients", function (backData) {
+            $.get("http://localhost:50010/GetClients", function (backData) {
                 if (backData.ret == 1) {
                     $('#clients').html(backData.message);
                 }
