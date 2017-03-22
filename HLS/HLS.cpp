@@ -257,25 +257,25 @@ public:
 int _tmain(int argc, _TCHAR* argv[])
 {
 	vector<string> ipcs;
-	ipcs.push_back("rtsp://admin:12345@192.168.1.57");
+	/*ipcs.push_back("rtsp://admin:12345@192.168.1.57");
 	ipcs.push_back("rtsp://admin:12345@192.168.1.48");
 	ipcs.push_back("rtsp://admin:12345@192.168.1.61");
 	ipcs.push_back("rtsp://admin:12345@192.168.1.56");
 	ipcs.push_back("rtsp://admin:12345@192.168.1.55");
 	ipcs.push_back("rtsp://admin:12345@192.168.1.66");
-	ipcs.push_back("rtsp://admin:12345@192.168.1.63");
-	ipcs.push_back("rtsp://admin:12345@192.168.1.49");
+	ipcs.push_back("rtsp://admin:12345@192.168.1.63");*/
+	//ipcs.push_back("rtsp://admin:12345@192.168.1.49");
 	ipcs.push_back("rtsp://admin:12345@192.168.1.67");
-	ipcs.push_back("rtsp://admin:12345@192.168.1.53");
+	//ipcs.push_back("rtsp://admin:12345@192.168.1.53");
 	ipcs.push_back("rtsp://admin:12345@192.168.1.60");
-	ipcs.push_back("rtsp://admin:12345@192.168.1.58");
+	/*ipcs.push_back("rtsp://admin:12345@192.168.1.58");
 	ipcs.push_back("rtsp://admin:12345@192.168.1.50");
 	ipcs.push_back("rtsp://admin:12345@192.168.1.59");
 	ipcs.push_back("rtsp://admin:12345@192.168.1.43");
 	ipcs.push_back("rtsp://admin:12345@192.168.1.47");
 	ipcs.push_back("rtsp://admin:a88888888@192.168.1.36");
 	ipcs.push_back("rtsp://admin:a88888888@192.168.1.35");
-	ipcs.push_back("rtsp://admin:12345@192.168.1.64");
+	ipcs.push_back("rtsp://admin:12345@192.168.1.64");*/
 
 	int j = 0;
 	for (auto i = ipcs.begin(); i != ipcs.end(); i++)

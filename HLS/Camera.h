@@ -305,6 +305,11 @@ public:
 		{
 			Util::Debug("from index %d,to index %d,inPackets size %d", from, packet.index, inPackets.size());
 		}
+		if (count<2)
+		{
+			Util::Debug("count %d", count);
+			ret = false;
+		}
 		return ret;
 	}
 
