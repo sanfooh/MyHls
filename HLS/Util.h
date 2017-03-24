@@ -9,7 +9,9 @@
 #include <psapi.h>  
 #include <sstream>
 #include <TlHelp32.h>
+#include <Iphlpapi.h>
 #pragma comment(lib,"psapi.lib")  
+#pragma comment(lib,"Iphlpapi.lib")  
 using namespace std;
 
 
@@ -235,6 +237,44 @@ public:
 	{
 		GuidHelper helper;
 		return  helper.GetGuidNoHyphen();
+	}
+
+
+    static bool GetPortUse(int nPort)
+	{
+		MIB_TCPTABLE TcpTable[100];
+		DWORD nSize = sizeof(TcpTable);
+		if (NO_ERROR == GetTcpTable(&TcpTable[0], &nSize, TRUE))
+		{
+			DWORD nCount = TcpTable[0].dwNumEntries;
+			if (nCount > 0)
+			{
+				for (DWORD i = 0; i<nCount; i++)
+				{
+					MIB_TCPROW TcpRow = TcpTable[0].table[i];
+					DWORD temp1 = TcpRow.dwLocalPort;
+					int temp2 = temp1 / 256 + (temp1 % 256) * 256;
+					if (temp2 == nPort)
+					{
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		return false;
+	}
+
+
+	static string Format(const char* content, ...)
+	{
+		char buf[1000] = { 0 };
+		va_list st;
+		va_start(st, content);
+		vsprintf(buf, content, st);
+		va_end(st);
+
+		return buf;
 	}
 
 };

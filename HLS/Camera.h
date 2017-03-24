@@ -34,7 +34,27 @@ class Camera :public ICamera
 	/// The try connect count maximum
 	/// </summary>
 	const int tryConnectCountMax = 3;
+
+	/// <summary>
+	/// The listen port
+	/// </summary>
+	int listenPort = 0;
+
+	/// <summary>
+	/// The is pull
+	/// </summary>
+	//bool isPull = true;
+
+	/// <summary>
+	/// The stream type pull or push
+	/// </summary>
+	int streamType = 0;
+
+
 public:
+	static const int SteamTypePull=0;
+	static const int SteamTypePush = 1;
+
 	/// <summary>
 	/// The URL
 	/// </summary>
@@ -102,10 +122,6 @@ public:
 	/// </summary>
 	vector<unsigned char> tsData;
 	/// <summary>
-	/// The parse packet count
-	/// </summary>
-	int parsePacketCount = 100;
-	/// <summary>
 	/// The millisecondtimebase
 	/// </summary>
 	AVRational MILLISECONDTIMEBASE = AVRational{ 1, 1000 };
@@ -114,12 +130,18 @@ public:
 	/// </summary>
 	size_t packetCount = 0;
 
+
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Camera"/> class.
 	/// </summary>
-	Camera()
+	Camera(int streamType,int listenPort)
 	{
+		this->streamType = streamType;
 		clientManage.SetCamera(this);
+		if (this->streamType== SteamTypePush)
+		{
+			url = Util::Format("rtsp://localhost:%d/live.sdp", listenPort);
+		}
 	}
 
 	/// <summary>
@@ -135,7 +157,17 @@ public:
 		ic = avformat_alloc_context();
 		AVDictionary* options = NULL;
 		av_dict_set(&options, "rtsp_transport", "tcp", 0);
-		av_dict_set(&options, "stimeout", "6000", 0);
+		
+		if (this->streamType == SteamTypePush)
+		{
+			av_dict_set(&options, "timeout", "10", 0);
+			av_dict_set(&options, "rtsp_flags", "listen", 0);
+			Util::Debug("listen on :%s",url.c_str());
+		}
+		else
+		{
+			av_dict_set(&options, "stimeout", "10000", 0);
+		}
 		ret = avformat_open_input(&ic, url.c_str(), NULL, &options);
 		if (ret < 0)
 		{
@@ -305,7 +337,7 @@ public:
 		{
 			Util::Debug("from index %d,to index %d,inPackets size %d", from, packet.index, inPackets.size());
 		}
-		if (count<2)
+		if (count < 2)
 		{
 			Util::Debug("count %d", count);
 			ret = false;
@@ -460,6 +492,8 @@ class CameraMangage
 	/// The close event
 	/// </summary>
 	CloseEvent closeEvent;
+
+	vector<int> usePorts;
 public:
 
 	/// <summary>
@@ -498,6 +532,7 @@ public:
 		deleteThead.detach();
 
 	}
+
 	/// <summary>
 	/// Finalizes an instance of the <see cref="CameraMangage"/> class.
 	/// </summary>
@@ -511,20 +546,57 @@ public:
 	/// </summary>
 	/// <param name="context">The context.</param>
 	/// <param name="key">The key.</param>
+	/// <param name="isPull">if set to true is pull.else is push</param>
 	/// <returns></returns>
-	bool Add(Camera** context, string key)
+	bool Add(Camera** context, string key, bool isPull,int& listenPort)
 	{
 		auto it = pullIns.find(key);
 		if (it != pullIns.end())
 		{
 			return false;
 		}
-		*context = new Camera();
+		if (!isPull)
+		{
+			*context = new Camera(isPull,0);
+		}
+		else
+		{
+			listenPort = GetFreePort();
+			*context = new Camera(isPull, listenPort);
+		}
 		pullIns[key] = *context;
 		keyLock.lock();
 		keys.push_back(key);
 		keyLock.unlock();
 		return true;
+	}
+
+
+	/// <summary>
+	/// Gets the free port.
+	/// </summary>
+	/// <returns></returns>
+	int GetFreePort()
+	{
+		int port = 0;
+		for (int i = 10000; i <65535; i++)
+		{
+			auto it = find(usePorts.begin(), usePorts.end(), i);
+			if (it != usePorts.end())
+			{
+				continue;
+			}
+			else
+			{
+				if (!Util::GetPortUse(i))
+				{
+					port = i;
+					break;
+				}
+			}
+		}
+		usePorts.push_back(port);
+		return port;
 	}
 
 	/// <summary>

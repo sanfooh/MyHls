@@ -28,6 +28,13 @@ mg_serve_http_opts s_http_server_opts;
 /// </summary>
 CameraMangage cameraManage;
 
+
+const string listenRtspIP="localhost";
+const string listenRtspPort = "50010";
+const string localIp = "localhost";
+const string listenWebPort = "8070";
+
+
 class MongooseHelper
 {
 	/// <summary>
@@ -164,36 +171,59 @@ class MongooseHelper
 					{
 						string& tag = args[1];
 						string url = Util::Replace(args[2], "%", "/");
+						int listenPort;
 						Camera* context;
-						if (cameraManage.Add(&context, tag))
+						if (cameraManage.Add(&context, tag, Camera::SteamTypePull, listenPort))
 						{
 							context->url = url;
 							context->tag = tag;
 							context->StartPullThread();
+							auto data = Util::Format("{\"type\":pull,\"pushUrl\":\"%s\",\"pullUrl\":\"http://%s:%s/Play/%s\"}", url.c_str(), listenRtspIP.c_str(), listenRtspPort.c_str(), tag.c_str());
+							SendJson(c, 200, 0, data.c_str(), "");
 						}
 						else
 						{
 							SendJson(c, 200, 0, "", "the pull stream already exist");
 						}
 					}
+
 					else
-						if (args[0] == "GetPullList")
+						if (args[0] == "AddPush")
 						{
-							auto json = cameraManage.GetListJson();
-							SendJson(c, 200, 1, json.c_str(), "");
-						}
-						else
-							if (args[0] == "GetUsage")
+							string& tag = args[1];
+							int listenPort;
+							//string url = Util::Replace(args[2], "%", "/");
+							Camera* context;
+							if (cameraManage.Add(&context, tag,Camera::SteamTypePush, listenPort))
 							{
-								SendJson(c, 200, 1, "", Util::GetProcessStat().c_str());
+								context->tag = tag;
+								context->StartPullThread();
+								auto data= Util::Format("{\"type\":push,\"pushUrl\":\"rtsp://%s:%d/live.sdp\",\"pullUrl\":\"http://%s:%s/Play/%s\"}", localIp.c_str(), listenPort,listenRtspIP.c_str(), listenRtspPort.c_str(), tag.c_str());
+								SendJson(c, 200, 0, data.c_str(), "connect in 30 seconds");
 							}
 							else
-								if (args[0] == "GetClients")
+							{
+								SendJson(c, 200, 0, "", "the pull stream already exist");
+							}
+						}
+						else
+							if (args[0] == "GetPullList")
+							{
+								auto json = cameraManage.GetListJson();
+								SendJson(c, 200, 1, json.c_str(), "connect in 30 seconds");
+							}
+							else
+								if (args[0] == "GetUsage")
 								{
-
-									string message = cameraManage.GetInfo();
-									SendJson(c, 200, 1, "", message.c_str());
+									SendJson(c, 200, 1, "", Util::GetProcessStat().c_str());
 								}
+								else
+									if (args[0] == "GetClients")
+									{
+
+										string message = cameraManage.GetInfo();
+										SendJson(c, 200, 1, "", message.c_str());
+									}
 		}
 	}
 
@@ -217,7 +247,7 @@ public:
 	/// Listens the specified live port.
 	/// </summary>
 	/// <param name="livePort">The live port.</param>
-	/// <param name="webPort">The web port.</param>
+	/// <param name="listenWebPort">The web port.</param>
 	static void Listen(const char* livePort, const char* webPort)
 	{
 		mg_mgr mgr, mrg_web;
@@ -257,40 +287,40 @@ public:
 int _tmain(int argc, _TCHAR* argv[])
 {
 	vector<string> ipcs;
-	/*ipcs.push_back("rtsp://admin:12345@192.168.1.57");
-	ipcs.push_back("rtsp://admin:12345@192.168.1.48");
-	ipcs.push_back("rtsp://admin:12345@192.168.1.61");
-	ipcs.push_back("rtsp://admin:12345@192.168.1.56");
-	ipcs.push_back("rtsp://admin:12345@192.168.1.55");
-	ipcs.push_back("rtsp://admin:12345@192.168.1.66");
-	ipcs.push_back("rtsp://admin:12345@192.168.1.63");*/
+	//ipcs.push_back("rtsp://admin:12345@192.168.1.57");
+	//ipcs.push_back("rtsp://admin:12345@192.168.1.48");
+	//ipcs.push_back("rtsp://admin:12345@192.168.1.61");
+	//ipcs.push_back("rtsp://admin:12345@192.168.1.56");
+	//ipcs.push_back("rtsp://admin:12345@192.168.1.55");
+	//ipcs.push_back("rtsp://admin:12345@192.168.1.66");
+	//ipcs.push_back("rtsp://admin:12345@192.168.1.63");
 	//ipcs.push_back("rtsp://admin:12345@192.168.1.49");
-	ipcs.push_back("rtsp://admin:12345@192.168.1.67");
+	//ipcs.push_back("rtsp://admin:12345@192.168.1.67");
 	//ipcs.push_back("rtsp://admin:12345@192.168.1.53");
-	ipcs.push_back("rtsp://admin:12345@192.168.1.60");
-	/*ipcs.push_back("rtsp://admin:12345@192.168.1.58");
-	ipcs.push_back("rtsp://admin:12345@192.168.1.50");
-	ipcs.push_back("rtsp://admin:12345@192.168.1.59");
-	ipcs.push_back("rtsp://admin:12345@192.168.1.43");
-	ipcs.push_back("rtsp://admin:12345@192.168.1.47");
-	ipcs.push_back("rtsp://admin:a88888888@192.168.1.36");
-	ipcs.push_back("rtsp://admin:a88888888@192.168.1.35");
-	ipcs.push_back("rtsp://admin:12345@192.168.1.64");*/
+	//ipcs.push_back("rtsp://admin:12345@192.168.1.60");
+	//ipcs.push_back("rtsp://admin:12345@192.168.1.58");
+	//ipcs.push_back("rtsp://admin:12345@192.168.1.50");
+	//ipcs.push_back("rtsp://admin:12345@192.168.1.59");
+	//ipcs.push_back("rtsp://admin:12345@192.168.1.43");
+	//ipcs.push_back("rtsp://admin:12345@192.168.1.47");
+	//ipcs.push_back("rtsp://admin:a88888888@192.168.1.36");
+	//ipcs.push_back("rtsp://admin:a88888888@192.168.1.35");
+	//ipcs.push_back("rtsp://admin:12345@192.168.1.64");
+	//ipcs.push_back("test");
+	//int j = 0;
+	//for (auto i = ipcs.begin(); i != ipcs.end(); i++)
+	//{
+	//	char tag[100] = { 0 };
+	//	sprintf(tag, "%d", j++);
+	//	Camera * context;
+	//	if (cameraManage.Add(&context, tag,false))
+	//	{
+	//		//context->url = (*i);
+	//		context->tag = tag;
+	//		context->StartPullThread();
+	//	}
+	//}
 
-	int j = 0;
-	for (auto i = ipcs.begin(); i != ipcs.end(); i++)
-	{
-		char tag[100] = { 0 };
-		sprintf(tag, "%d", j++);
-		Camera * context;
-		if (cameraManage.Add(&context, tag))
-		{
-			context->url = (*i);
-			context->tag = tag;
-			context->StartPullThread();
-		}
-	}
-
-	MongooseHelper::Listen("50010", "8070");
+	MongooseHelper::Listen(listenRtspPort.c_str(), listenWebPort.c_str());
 	return 1;
 }
